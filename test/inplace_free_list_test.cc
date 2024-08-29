@@ -487,3 +487,18 @@ TYPED_TEST(inplace_free_list_test, raii)
 
 	EXPECT_EQ(u.use_count(), 1);
 }
+
+TYPED_TEST(inplace_free_list_test, sort)
+{
+	using inplace_free_list = typename TestFixture::inplace_free_list;
+
+	inplace_free_list v;
+	std::map<std::size_t, typename inplace_free_list::value_type> expected;
+    TestFixture::fill_random_diffuse(expected, v);
+	v.sort();
+	EXPECT_TRUE(v.is_sorted());
+	auto cb = [&](inplace_free_list::size_type from, inplace_free_list::size_type to) {
+		std::cout << "Swapping: " << from << "," << (to) << "\n";
+		};
+	v.optimize_at(cb);
+}

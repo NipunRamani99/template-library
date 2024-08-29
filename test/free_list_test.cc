@@ -93,6 +93,12 @@ public:
 			actual.erase(actual.at(idx));
 		}
 	}
+
+	
+
+	bool is_sorted(free_list& list) {
+		
+	}
 };
 
 using free_list_test_types =
@@ -436,4 +442,17 @@ TYPED_TEST(free_list_test, raii)
 	}
 
 	EXPECT_EQ(u.use_count(), 1);
+}
+
+TYPED_TEST(free_list_test, optimize) {
+	using type = typename TestFixture::free_list::value_type;
+	using free_list = typename TestFixture::free_list;
+	free_list v;
+	std::map<std::size_t, typename free_list::value_type> expected;
+	TestFixture::fill_random_diffuse(expected, v);
+	auto cb = [&](free_list::size_type from, free_list::size_type to) {
+		std::cout << "Swapping: " << static_cast<std::size_t>(from) << "," << static_cast<std::size_t>(to) << "\n";
+	};
+	v.optimize_at(cb);
+	ASSERT_TRUE(true);
 }
