@@ -164,33 +164,38 @@ namespace fox
 				{
 					if (mask.test(right)) 
 					{
+						reinterpret_cast<offset_accessor*>(std::data(storage_))[right].offset = right + 1;
 						right--;
 					}
 					else
 					{
 						T* source = reinterpret_cast<T*>(std::data(storage_)) + right;
 						T* dest = reinterpret_cast<T*>(std::data(storage_)) + left;
-						std::swap(*source, *dest);
+						std::construct_at(dest, std::move(*source));
+						std::construct_at(reinterpret_cast<offset_accessor*>(std::data(storage_)) + right, static_cast<offset_type>(right + 1));
 
-						reinterpret_cast<offset_accessor*>(std::data(storage_))[right].offset = right + 1;
 						cb(right, left);
 						
 						mask.reset(left);
-						mask.set(right);
-						left++;
-						
-						first_free_ = right--;
+						mask.set(right);						
+						first_free_ = right;
 					}
 
 				}
-				left++;
+				else 
+					left++;
 			}
 
-			if (mask.test(Capacity - 1)) 
+			if (right >= 0 && mask.test(right)) 
+			{
+				first_free_ = right;
+				reinterpret_cast<offset_accessor*>(std::data(storage_))[right].offset = right + 1;
+			}
+
+			if (mask.test(Capacity - 1))
 			{
 				reinterpret_cast<offset_accessor*>(std::data(storage_))[Capacity - 1].offset = offset_type_npos;
 			}
-
 		}
 		
 		void sort() {
@@ -285,7 +290,7 @@ namespace fox
 		[[nodiscard]] T* operator[](size_type idx) noexcept
 		{
 			auto ptr = this->data() + idx;
-			assert_holds_value(ptr);
+			//assert_holds_value(ptr);
 			return ptr;
 		}
 

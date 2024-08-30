@@ -102,7 +102,9 @@ namespace fox
 		template<std::invocable<pointer, pointer> Callback>
 		void optimize(Callback&& cb)
 		{
-			optimize_at([&](size_type from, size_type to) { cb(this->operator[](from), this->operator[](to)); });
+			optimize_at([&](size_type from, size_type to) { 
+				cb(this->operator[](from), this->operator[](to)); 
+			});
 		}
 
 		template<std::invocable<size_type, size_type> Callback>
