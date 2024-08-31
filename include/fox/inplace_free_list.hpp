@@ -294,7 +294,7 @@ namespace fox
 		[[nodiscard]] T* operator[](size_type idx) noexcept
 		{
 			auto ptr = this->data() + idx;
-			assert_holds_value(ptr);
+			//assert_holds_value(ptr);
 			return ptr;
 		}
 
